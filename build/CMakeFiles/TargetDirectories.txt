@@ -1,0 +1,3 @@
+/Users/beaujault/Documents/PERSO/cpp-server/build/CMakeFiles/cpp-server.dir
+/Users/beaujault/Documents/PERSO/cpp-server/build/CMakeFiles/edit_cache.dir
+/Users/beaujault/Documents/PERSO/cpp-server/build/CMakeFiles/rebuild_cache.dir
