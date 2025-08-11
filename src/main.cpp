@@ -3,14 +3,23 @@
 #include <netinet/in.h>
 #include <cstring>
 #include <unistd.h>
+#include <fstream>
+#include <ctime>
+
+std::ofstream logFile;
+
+void logMessage(const std::string &msg);
 
 int main(){
+    logFile.open("../logs/session.log"); 
+
     // create a socket (which is the endpoint for communication)
     int server = socket(AF_INET, SOCK_STREAM, 0);
     if (server == -1) {
         std::cerr << "Error creating socket" << std::endl;
         return 1;
     }
+    logMessage("Socket created");
 
     // now, let's set up the address structure
     sockaddr_in address;
@@ -25,6 +34,8 @@ int main(){
         close(server);
         return 1;
     }
+    logMessage("Socket and address associated");
+
 
     // and put the server socket in listening mode (1 because at the moment we only want to accept one connection)
     if (listen(server, 1) == -1) {
@@ -46,6 +57,7 @@ int main(){
     }
 
     std::cout << "Client connected" << std::endl;
+    logMessage("Client connected");
 
     char buffer[1024] = {0};
     ssize_t bytes_received = recv(clientSocket, buffer, sizeof(buffer) - 1, 0); // ssize_t is a signed data type (to return negative values on error)
@@ -55,8 +67,18 @@ int main(){
     } else {
         std::cerr << "Error receiving message" << std::endl;
     }
+    logMessage("Message received and displayed");
 
     close(clientSocket);
     close(server);
+    logFile.close();
     return 0;
+}
+
+void logMessage(const std::string &logMsg){
+    time_t now = time(0);
+    std::string timestamp = ctime(&now);
+    timestamp.pop_back(); // remove the newline character at the end
+    logFile << timestamp << ": " << logMsg << std::endl;
+    logFile.flush(); // fancy function to ensure all output is written to the file
 }
