@@ -10,8 +10,21 @@ std::ofstream logFile;
 
 void logMessage(const std::string &msg);
 
-int main(){
+int main(int argc, char *argv[]) {
     logFile.open("../logs/session.log"); 
+
+    int port = 0;
+    for (int i = 1; i < argc; i++) {
+        if ((strcmp(argv[i], "--port") == 0 || strcmp(argv[i], "-p") == 0) && i + 1 < argc) {
+            port = atoi(argv[i + 1]);
+            i++; 
+        }
+    }
+
+    if (port == 0) {
+        fprintf(stderr, "Usage: %s --port <num> ou -p <num>\n", argv[0]);
+        return 1;
+    }
 
     // create a socket (which is the endpoint for communication)
     int server = socket(AF_INET, SOCK_STREAM, 0);
@@ -26,7 +39,7 @@ int main(){
     std::memset(&address, 0, sizeof(address)); // useful to initialize the structure
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(8080);
+    address.sin_port = htons(port); // atoi (ASCII to integer)
 
     // then, we associate the socket with the address
     if (bind(server, (struct sockaddr *)&address, sizeof(address)) == -1) {
